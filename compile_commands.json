@@ -1,0 +1,17 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++17",
+      "-I",
+      "include",
+      "-o",
+      "bin/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/home/r2leyser/Coding/DelauneyTriangulation",
+    "file": "/home/r2leyser/Coding/DelauneyTriangulation/src/main.cpp",
+    "output": "/home/r2leyser/Coding/DelauneyTriangulation/bin/main.o"
+  }
+]
