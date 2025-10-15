@@ -1,59 +1,40 @@
-#include "WindowManager.h"
-#include "Functions.hpp"
+#include "WindowManager.hpp"
+#include "Window.hpp"
+#include "raylib.h"
+#include <string>
 #include <raylib-cpp.hpp>
 
-namespace R2Engine {
-    class Window {
-    public:
-        Window(int width, int height, int fps, bool antiAliasing, 
-                    bool resizable, bool fullscreen, bool vsync, 
-                    const std::string& title) 
-            : m_width(width),
-            m_height(height),
-            m_isVisible(false),
-            m_fps(fps),
-            m_antiAliasing(antiAliasing),
-            m_resizable(resizable),
-            m_fullscreen(fullscreen),
-            m_vsync(vsync),
-            m_title(title) {
+namespace Catharsis::GUI {
+    Window::Window(int width, int height, const std::string& title, int fps, bool resizable) 
+        : m_width(width), m_height(height),
+        m_title(title), m_isVisible(false) {
+        // init the window but do not show it yet
+        m_window = raylib::Window(width, height, "Catharsis Window");
+        m_window.Init();
+        m_window.SetTargetFPS(fps);
+        m_window.SetConfigFlags( resizable ? FLAG_WINDOW_RESIZABLE : 0 | FLAG_WINDOW_UNDECORATED  | FLAG_VSYNC_HINT);
 
-            m_window = raylib::Window(width, height, title.c_str());
-            m_window.SetConfigFlags((antiAliasing ? FLAG_MSAA_4X_HINT : 0) |
-                                           (resizable ? FLAG_WINDOW_RESIZABLE : 0) |
-                                           (fullscreen ? FLAG_FULLSCREEN_MODE : 0) |
-                                           (vsync ? FLAG_VSYNC_HINT : 0));
+        show();
+    }
 
-            m_window.SetTargetFPS(fps);
-        }
-
-        void show() {
+    void Window::show() {
+        if (!m_isVisible) {
+            m_window.SetTitle(m_title);
+            m_window.SetSize(m_width, m_height);
             m_isVisible = true;
-            while (!m_window.ShouldClose() && m_isVisible) {
+            while (!m_window.ShouldClose()) {
                 m_window.BeginDrawing();
                 m_window.ClearBackground(RAYWHITE);
-                raylib::DrawText("This is a window", 10, 10, 20, DARKGRAY);
+                raylib::DrawText("Welcome to Catharsis!", 190, 200, 20, LIGHTGRAY);
                 m_window.EndDrawing();
             }
         }
+    }
 
-        void close() {
-            m_isVisible = false;
+    void Window::close() {
+        if (m_isVisible) {
             m_window.Close();
+            m_isVisible = false;
         }
-    private:
-        raylib::Window m_window;
-
-        int m_width;
-        int m_height;
-        int m_fps;
-        std::string m_title;
-
-        bool m_isVisible;
-
-        bool m_antiAliasing = true;
-        bool m_resizable = true;
-        bool m_fullscreen = false;
-        bool m_vsync = true;
-    };
+    }
 }

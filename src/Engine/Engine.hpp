@@ -1,9 +1,11 @@
 #pragma once
 
-namespace R2Engine  {
-    class Engine {
+namespace Catharsis { 
+    class Core {
         public:
-            void init();
-            ~Engine();
+            Core();
+            static void run();
+            static void stop(); 
     };
-}
+
+} // namespace Catharsis
