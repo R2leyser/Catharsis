@@ -6,7 +6,7 @@
 #include "../Events/Events.hpp"
 
 namespace Catharsis {
-namespace Graphics {
+namespace Layers {
 
     class Layer { 
         public:
@@ -23,31 +23,43 @@ namespace Graphics {
             std::string layerName;
     };
 
-    class Layers {
+    class LayerManager {
         public:
-            Layers() = default;
-            ~Layers() = default;
+            LayerManager() = default;
+            ~LayerManager() = default;
 
-            void addLayer(const Layer& layer) {
-                layers.push_back(layer);
+            void addLayer(const Layer* layer) {
+                m_Layers.emplace_back(layer);
             }
 
             void removeLayer(int index) {
-                if (index >= 0 && index < layers.size()) {
-                    layers.erase(layers.begin() + index);
+                if (index >= 0 && index < m_Layers.size()) {
+                    m_Layers.erase(m_Layers.begin() + index);
                 }
             }
 
-            Layer& getLayer(int index) {
-                return layers.at(index);
+            Layer* getLayer(int index) {
+                return m_Layers.at(index);
             }
 
             size_t getLayerCount() const {
-                return layers.size();
+                return m_Layers.size();
             }
+
+            std::vector<Layer*>::iterator begin() { return m_Layers.begin(); }
+            std::vector<Layer*>::iterator end() { return m_Layers.end(); }
+            std::vector<Layer*>::reverse_iterator rbegin() { return m_Layers.rbegin(); }
+            std::vector<Layer*>::reverse_iterator rend() { return m_Layers.rend(); }
+
+            std::vector<Layer*>::const_iterator begin() const { return m_Layers.begin(); }
+            std::vector<Layer*>::const_iterator end()	const { return m_Layers.end(); }
+            std::vector<Layer*>::const_reverse_iterator rbegin() const { return m_Layers.rbegin(); }
+            std::vector<Layer*>::const_reverse_iterator rend() const { return m_Layers.rend(); }
         private:
-            std::vector<Layer> layers;
+            std::vector<Layer*> m_Layers;
+
+
     };
-} // namespace Graphics
+} // namespace Layerss
 }// namespace Catharsis
   //
