@@ -1,30 +1,23 @@
-# Copyright (c) 2020-present Caps Collective & contributors
-# Originally authored by Jonathan Moallem (@jonjondev) & Aryeh Zinn (@Raelr)
-#
-# This code is released under an unmodified zlib license.
-# For conditions of distribution and use, please see:
-#     https://opensource.org/licenses/Zlib
-
 # Define custom functions
 rwildcard = $(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 platformpth = $(subst /,$(PATHSEP),$1)
 
 # Set global macros
 buildDir := bin
-executable := catharsis
-target := $(buildDir)/$(executable)
+library := libcatharsis.a
+target := $(buildDir)/$(library)
 sources := $(call rwildcard,src/,*.cpp)
 objects := $(patsubst src/%, $(buildDir)/%, $(patsubst %.cpp, %.o, $(sources)))
 depends := $(patsubst %.o, %.d, $(objects))
 compileFlags := -Og -std=c++17 -I include
-linkFlags = -L lib/$(platform) -l raylib
+
+headers := $(call rwildcard,src/,*.h) $(call rwildcard,src/,*.hpp)
 
 # Check for Windows
 ifeq ($(OS), Windows_NT)
 	# Set Windows macros
 	platform := Windows
 	CXX ?= g++
-	linkFlags += -Wl,--allow-multiple-definition -pthread -lopengl32 -lgdi32 -lwinmm -static -static-libgcc -static-libstdc++
 	THEN := &&
 	PATHSEP := \$(BLANK)
 	MKDIR := -mkdir -p
@@ -37,13 +30,11 @@ else
 		# Set Linux macros
 		platform := Linux
 		CXX ?= g++
-		linkFlags += -l GL -l m -l pthread -l dl -l rt -l X11
 	endif
 	ifeq ($(UNAMEOS), Darwin)
 		# Set macOS macros
 		platform := macOS
 		CXX ?= clang++
-		linkFlags += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
 	endif
 
 	# Set UNIX macros
@@ -55,15 +46,15 @@ else
 endif
 
 # Lists phony targets for Makefile
-.PHONY: all setup submodules execute clean
+.PHONY: all setup submodules clean
 
-# Default target, compiles, executes and cleans
-all: $(target) execute clean
+# Default target, compiles and cleans
+all: $(target)
 
 # Sets up the project for compiling, generates includes and libs
 setup: include lib
 
-# Pull and update the the build submodules
+# Pull and update the build submodules
 submodules:
 	git submodule update --init --recursive --depth 1
 
@@ -80,9 +71,16 @@ lib: submodules
 	$(MKDIR) $(call platformpth, lib/$(platform))
 	$(call COPY,vendor/raylib/src,lib/$(platform),libraylib.a)
 
-# Link the program and create the executable
+# Create the static library
 $(target): $(objects)
-	$(CXX) $(objects) -o $(target) $(linkFlags)
+	ar rcs $(target) $(objects)
+	mkdir -p $(call platformpth, $(buildDir)/include)
+	for header in $(headers); do \
+		cp $$header $(call platformpth, $(buildDir)/include/); \
+	done
+
+
+	
 
 # Add all rules from dependency files
 -include $(depends)
@@ -91,10 +89,6 @@ $(target): $(objects)
 $(buildDir)/%.o: src/%.cpp Makefile
 	$(MKDIR) $(call platformpth, $(@D))
 	$(CXX) -MMD -MP -c $(compileFlags) $< -o $@ $(CXXFLAGS)
-
-# Run the executable
-execute:
-	$(target) $(ARGS)
 
 # Clean up all relevant files
 clean:
