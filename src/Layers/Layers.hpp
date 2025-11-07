@@ -28,7 +28,7 @@ namespace Layers {
             LayerManager() = default;
             ~LayerManager() = default;
 
-            void addLayer(const Layer* layer) {
+            void addLayer(Layer* layer) {
                 m_Layers.emplace_back(layer);
             }
 

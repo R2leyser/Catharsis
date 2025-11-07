@@ -1,9 +1,9 @@
 #include "Events.hpp"
+#include "EventListener.hpp"
 
-void Catharsis::Events::EventManager::registerEvent(const Event& event) {
-    // Implementation for registering an event
-}
-
-void Catharsis::Events::EventManager::triggerEvent(const Event& event) {
-    // Implementation for triggering an event
+void Catharsis::Events::Event::trigger() {
+    for (EventListener listener : m_listeners) {
+        listener.onEvent();
+    }
+    return;
 }

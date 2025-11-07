@@ -1,11 +1,16 @@
 #pragma once
 
+#include "../WindowManager/WindowManager.hpp"
+#include <memory>
+
 namespace Catharsis { 
     class Core {
         public:
             Core();
-            static void run();
-            static void stop(); 
+            void run();
+            void stop(); 
+        private:
+            std::shared_ptr<GUI::WindowManager> m_windowManager;
     };
 
 } // namespace Catharsis

@@ -4,7 +4,6 @@
 #include "Events.hpp"
 
 namespace Catharsis {
-namespace Events {
 
     class EventManager {
             public:
@@ -14,5 +13,4 @@ namespace Events {
             private:
                 std::vector<Event> eventQueue;
     };
-} // namespace Events
 } // namespace Catharsis
